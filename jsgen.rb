@@ -4,54 +4,54 @@
 
 
 class JSSymbol < String
-	def removeRedundant
-		self[/[^\+].*/]
-	end
+    def removeRedundant
+        self[/[^\+].*/]
+    end
+    
+    def toString
+        (self.end_with? "+[]") ? self : self+"+[]"
+    end
+    
+    def *(n)
+        if n.class == JSSymbol
+            JSSymbol.new("(#{self.removeRedundant})*(#{n.removeRedundant})")
+        else
+            (super n).removeRedundant
+        end
+    end
 
-	def toString
-		(self.end_with? "+[]") ? self : self+"+[]"
-	end
+    def /(n)
+        if n.class == JSSymbol
+            JSSymbol.new("(#{self.removeRedundant})/(#{n.removeRedundant})")
+        end
+    end
 
-	def *(n)
-		if n.class == JSSymbol
-			JSSymbol.new("(#{self.removeRedundant})*(#{n.removeRedundant})")
-		else
-			(super n).removeRedundant
-		end
-	end
+    def +(n)
+        if n.class == JSSymbol
+            ops = /[\*\/]+/ #bracket if the number contains a mul or div
+            
+            b = n[ops]? "(#{n.removeRedundant})" : n.removeRedundant
+            a = self[ops]? "(#{self.removeRedundant})" : self.removeRedundant
+            
+            JSSymbol.new("#{a}+#{b}")
+        else
+            super n
+        end
+    end
 
-	def /(n)
-		if n.class == JSSymbol
-			JSSymbol.new("(#{self.removeRedundant})/(#{n.removeRedundant})")
-		end
-	end
-
-	def +(n)
-		if n.class == JSSymbol
-			ops = /[\*\/]+/ #bracket if the number contains a mul or div
-
-			b = n[ops]? "(#{n.removeRedundant})" : n.removeRedundant
-			a = self[ops]? "(#{self.removeRedundant})" : self.removeRedundant
-			
-			JSSymbol.new("#{a}+#{b}")
-		else
-			super n
-		end
-	end
-
-	def [](n)
-		if n.class == JSSymbol
-			JSSymbol.new("(#{self.toString})[#{n}]")
-		else
-			super n
-		end
-	end
+    def [](n)
+        if n.class == JSSymbol
+            JSSymbol.new("(#{self.toString})[#{n}]")
+        else
+            super n
+        end
+    end
 end
 
 module Enumerable
-	def shortestString
-		self.min_by { |s| s.length }
-	end
+    def shortestString
+        self.min_by { |s| s.length }
+    end
 end
 
 #numbers
@@ -145,7 +145,7 @@ __right_square_bracket = _Object[_14] #]
 
 _RegExp_test = JSSymbol.new("/./[#{_t+_e+_s+_t}]")
 #function test() {
-#    [native code]
+#   [native code]
 #}
 
 #letters
@@ -192,7 +192,7 @@ __right_square_bracket = [__right_square_bracket, _RegExp_test[_34]].shortestStr
 
 _RegExp = JSSymbol.new("/./[#{_c+_o+_n+_s+_t+_r+_u+_c+_t+_o+_r}+[]]")
 #function RegExp() {
-#    [native code]
+#   [native code]
 #}
 
 #letters
@@ -208,7 +208,7 @@ _E = _RegExp[_12]
 
 _Function = JSSymbol.new("#{_RegExp_test}[#{_c+_o+_n+_s+_t+_r+_u+_c+_t+_o+_r}+[]]")
 #function Function() {
-#    [native code]
+#   [native code]
 #}
 
 #capitals
@@ -218,7 +218,7 @@ _F = _Function[_9]
 
 _Number = JSSymbol.new("(#{_0})[#{_c+_o+_n+_s+_t+_r+_u+_c+_t+_o+_r}+[]]")
 #function Number() {
-#    [native code]
+#   [native code]
 #}
 
 #letters
@@ -228,7 +228,7 @@ _m = _Number[_11]
 
 _Boolean = JSSymbol.new("(![])[#{_c+_o+_n+_s+_t+_r+_u+_c+_t+_o+_r}+[]]")
 #function Boolean() {
-#    [native code]
+#   [native code]
 #}
 
 #capitals
@@ -238,7 +238,7 @@ _B = _Boolean[_9]
 
 _String = JSSymbol.new("([]+[])[#{_c+_o+_n+_s+_t+_r+_u+_c+_t+_o+_r}+[]]")
 #function String() {
-#    [native code]
+#   [native code]
 #}
 
 #letters
@@ -251,7 +251,7 @@ _S = _String[_9]
 
 _Array = JSSymbol.new("[]")
 #function Array() {
-#    [native code]
+#   [native code]
 #}
 
 #capitals
@@ -269,17 +269,17 @@ _A = _Array[_9]
 
 #Commands for convenience
 ARGV.each { |command|
-	case command
+    case command
     when "-list", "-l"
-		(["Letters"] + "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".chars.to_a + ["Numbers"] + (-1..36).to_a).each { |a|
-			if a.class < Integer
-				s = a < 0 ? "_n#{a.abs}" : "_#{a}"
+        (["Letters"] + "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".chars.to_a + ["Numbers"] + (-1..36).to_a).each { |a|
+            if a.class < Integer
+                s = a < 0 ? "_n#{a.abs}" : "_#{a}"
             else
-				s = "_#{a}"
-			end
+                s = "_#{a}"
+            end
             
-			js = eval("(defined? #{s}) ? #{s} : nil")
-			puts "#{a}: #{js}"
-		}
-	end
+            js = eval("(defined? #{s}) ? #{s} : nil")
+            puts "#{a}: #{js}"
+        }
+    end
 }
