@@ -9,7 +9,8 @@ This is more just a personal reference, that I can update whenever I have a smal
 
 Currently it is incomplete, since I want to try avoid using the DOM or browser specific tricks. May add them later as an option.
 
-The current list it can generate (excluding special characters and objects) is:
+The current list it can generate (excluding special characters and objects):
+
 ---
 	Letters: 
 	a: (![]+[])[+!![]]
