@@ -261,9 +261,49 @@ _A = _Array[_9]
 
 #letters missing: h, k, q, w, z
 #capitals missing: C, D, G, H, J, K, L, M, P, Q, T, U, V, W, X, Y, Z
+class JSSymbol
+    def self.number(i)
+        if i >= 0 and i <= 36
+            return TOPLEVEL_BINDING.eval("_#{i}")
+        elsif i == -1
+            return TOPLEVEL_BINDING.eval("_n1")
+        else
+            sol = []
+            neg = i < 0
+            i = i.abs
+            (2..36).each { |x|
+                if i.remainder(x) == 0 and i / x <= 36
+                    sol << TOPLEVEL_BINDING.eval("_#{x}*_#{i/x}")
+                end
+            }
 
-#only option from here is to use the DOM? Or something non-standard?
+            a = i.to_s.split("").map { |x| "[#{JSSymbol.number(x.to_i)}]" }.join("+")
+            sol << "(+(#{a}))"
 
+            sol = sol.shortestString
+            if neg
+                sol *= TOPLEVEL_BINDING.eval("_n1")
+            end
+
+            return sol
+        end
+    end
+end
+
+
+def smallestRadixLargerThan(index)
+    radixes = []
+    (index..36).each { |i| radixes << JSSymbol.number(i) }
+    
+    return radixes.shortestString
+end
+
+
+_h = JSSymbol.new("(#{_17})[#{_t+_o+_S+_t+_r+_i+_n+_g}](#{smallestRadixLargerThan(18)})")
+_k = JSSymbol.new("(#{_20})[#{_t+_o+_S+_t+_r+_i+_n+_g}](#{smallestRadixLargerThan(21)})")
+_q = JSSymbol.new("(#{_26})[#{_t+_o+_S+_t+_r+_i+_n+_g}](#{smallestRadixLargerThan(27)})")
+_w = JSSymbol.new("(#{_32})[#{_t+_o+_S+_t+_r+_i+_n+_g}](#{smallestRadixLargerThan(33)})")
+_z = JSSymbol.new("(#{_35})[#{_t+_o+_S+_t+_r+_i+_n+_g}](#{smallestRadixLargerThan(36)})")
 
 
 
